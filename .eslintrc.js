@@ -12,5 +12,9 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
+    '@typescript-eslint/explicit-function-return-type': [
+      'error',
+      { allowExpressions: true },
+    ],
   },
 };

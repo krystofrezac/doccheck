@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "index.js",
   "bin": {
-    "doccheck": "./bin/index.js"
+    "doccheck": "./bin/index"
   },
   "scripts": {
     "build": "tsc",
