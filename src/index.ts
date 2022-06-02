@@ -2,8 +2,8 @@ import yargs from 'yargs/yargs';
 
 import parseFile from './parseFile';
 
-const checkFile = (filename: string): void => {
-  const metadata = parseFile(filename);
+const checkFile = async (filename: string): Promise<void> => {
+  const metadata = await parseFile(filename);
 
   console.log(metadata);
 };

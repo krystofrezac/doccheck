@@ -1,8 +1,17 @@
 import fs from 'fs';
+import path from 'path';
+
+import simpleGit from 'simple-git';
+
+// TODO: Rename interfaces
+interface Result {
+  lastUpdate: Date;
+  dependencies: { file: string; lastUpdate?: Date }[];
+}
 
 interface MetadataWithParsedDependencies {
   lastUpdate: string;
-  dependencies: { file: string; lastUpdate: string }[];
+  dependencies: { file: string; lastUpdate?: Date }[];
 }
 
 interface Metadata {
@@ -54,21 +63,52 @@ export const parseMetadata = (content: string): Metadata => {
   return result as Metadata;
 };
 
-const parseDependencies = (
+const relativeToAbsolutePaths = (
+  basePath: string,
+  relativePath: string,
+): string => relativePath.replace('./', `${basePath}/`);
+
+const parseDependencies = async (
+  filename: string,
   metadata: Metadata,
-): MetadataWithParsedDependencies => {
-  const dependencies = metadata.dependencies.map(dep => ({
-    file: dep,
-    lastUpdate: 'abc',
-  }));
+): Promise<MetadataWithParsedDependencies> => {
+  const dependencies = await Promise.all(
+    metadata.dependencies.map(async dep => {
+      const absolutePath = relativeToAbsolutePaths(path.dirname(filename), dep);
+      const log = await simpleGit().log({
+        file: absolutePath,
+        maxCount: 1,
+      });
+      const lastUpdateISO = log.latest?.date;
+
+      return {
+        file: absolutePath,
+        lastUpdate: lastUpdateISO ? new Date(lastUpdateISO) : undefined,
+      };
+    }),
+  );
 
   return { lastUpdate: metadata.lastUpdate, dependencies };
 };
 
-const parseFile = (filename: string): MetadataWithParsedDependencies => {
+const parseFile = async (filename: string): Promise<Result> => {
   const file = readFile(filename);
   const metadata = parseMetadata(file);
-  return parseDependencies(metadata);
+  const metadataWithDeps = await parseDependencies(filename, metadata);
+
+  const lastUpdateCommit = await simpleGit().log({
+    from: `${metadataWithDeps.lastUpdate}~`,
+    to: metadataWithDeps.lastUpdate,
+  });
+  const lastUpdateCommitDate = lastUpdateCommit.latest?.date;
+
+  if (!lastUpdateCommitDate)
+    throw new Error(`${filename} has invalid \`lastUpdate\` field`);
+
+  return {
+    ...metadataWithDeps,
+    lastUpdate: new Date(lastUpdateCommitDate),
+  };
 };
 
 export default parseFile;
