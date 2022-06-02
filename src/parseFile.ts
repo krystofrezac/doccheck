@@ -10,17 +10,17 @@ interface Result {
 }
 
 interface MetadataWithParsedDependencies {
-  lastUpdate: string;
+  updatedAfter: string;
   dependencies: { file: string; lastUpdate?: Date }[];
 }
 
 interface Metadata {
-  lastUpdate: string;
+  updatedAfter: string;
   dependencies: string[];
 }
 
 interface ParsingMetadata {
-  lastUpdate?: string;
+  updatedAfter?: string;
   dependencies: string[];
 }
 
@@ -46,8 +46,8 @@ export const parseMetadata = (content: string): Metadata => {
     value = value.trim();
 
     switch (key) {
-      case 'lastUpdate':
-        result.lastUpdate = value;
+      case 'updatedAfter':
+        result.updatedAfter = value;
         break;
       case 'dep':
         result.dependencies.push(value);
@@ -57,7 +57,8 @@ export const parseMetadata = (content: string): Metadata => {
     }
   });
 
-  if (result.lastUpdate === undefined) throw new Error('lastUpdate is missing');
+  if (result.updatedAfter === undefined)
+    throw new Error('updateAfter is missing');
 
   // TODO: find more optimal way to silence TS
   return result as Metadata;
@@ -88,7 +89,7 @@ const parseDependencies = async (
     }),
   );
 
-  return { lastUpdate: metadata.lastUpdate, dependencies };
+  return { updatedAfter: metadata.updatedAfter, dependencies };
 };
 
 const parseFile = async (filename: string): Promise<Result> => {
@@ -96,18 +97,20 @@ const parseFile = async (filename: string): Promise<Result> => {
   const metadata = parseMetadata(file);
   const metadataWithDeps = await parseDependencies(filename, metadata);
 
-  const lastUpdateCommit = await simpleGit().log({
-    from: `${metadataWithDeps.lastUpdate}~`,
-    to: metadataWithDeps.lastUpdate,
+  const fileCommits = await simpleGit().log({
+    from: `${metadataWithDeps.updatedAfter}~`,
+    to: 'HEAD',
   });
-  const lastUpdateCommitDate = lastUpdateCommit.latest?.date;
 
-  if (!lastUpdateCommitDate)
-    throw new Error(`${filename} has invalid \`lastUpdate\` field`);
+  // take next commit if already exists or take the commit
+  const lastUpdated =
+    fileCommits.all.length > 1
+      ? fileCommits.all[fileCommits.all.length - 2].date
+      : fileCommits.all[fileCommits.all.length - 1].date;
 
   return {
     ...metadataWithDeps,
-    lastUpdate: new Date(lastUpdateCommitDate),
+    lastUpdate: new Date(lastUpdated),
   };
 };
 
