@@ -1,11 +1,16 @@
 import fs from 'fs';
 
-interface ParsedFile {
-  lastUpdate?: string;
+interface MetadataWithParsedDependencies {
+  lastUpdate: string;
+  dependencies: { file: string; lastUpdate: string }[];
+}
+
+interface Metadata {
+  lastUpdate: string;
   dependencies: string[];
 }
 
-interface ParsingFile {
+interface ParsingMetadata {
   lastUpdate?: string;
   dependencies: string[];
 }
@@ -14,7 +19,7 @@ const readFile = (filename: string): string =>
   // TODO: handle exceptions
   fs.readFileSync(filename, 'utf8');
 
-export const parseFileContent = (content: string): ParsedFile => {
+export const parseMetadata = (content: string): Metadata => {
   const metadataStartIndex = content.indexOf('---');
   const metadataEndIndex = content.indexOf('\n---', metadataStartIndex + 1);
 
@@ -23,7 +28,7 @@ export const parseFileContent = (content: string): ParsedFile => {
     metadataEndIndex,
   );
 
-  const result: ParsingFile = { dependencies: [] };
+  const result: ParsingMetadata = { dependencies: [] };
 
   const metadataRows = metadataContent.split('\n');
   metadataRows.forEach(row => {
@@ -46,12 +51,24 @@ export const parseFileContent = (content: string): ParsedFile => {
   if (result.lastUpdate === undefined) throw new Error('lastUpdate is missing');
 
   // TODO: find more optimal way to silence TS
-  return result as ParsedFile;
+  return result as Metadata;
 };
 
-const parseFile = (filename: string): ParsedFile => {
-  const content = readFile(filename);
-  return parseFileContent(content);
+const parseDependencies = (
+  metadata: Metadata,
+): MetadataWithParsedDependencies => {
+  const dependencies = metadata.dependencies.map(dep => ({
+    file: dep,
+    lastUpdate: 'abc',
+  }));
+
+  return { lastUpdate: metadata.lastUpdate, dependencies };
+};
+
+const parseFile = (filename: string): MetadataWithParsedDependencies => {
+  const file = readFile(filename);
+  const metadata = parseMetadata(file);
+  return parseDependencies(metadata);
 };
 
 export default parseFile;

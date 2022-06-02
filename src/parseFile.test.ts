@@ -1,6 +1,6 @@
-import { parseFileContent } from '../src/parseFile';
+import { parseMetadata } from './parseFile';
 
-describe('parseFileContent', () => {
+describe('parseMetadata', () => {
   it('should parse normal file', () => {
     const content = `
 ---
@@ -9,7 +9,7 @@ dep: ./dep1.js
 dep: ./dep2.js
 ---
 `;
-    expect(parseFileContent(content)).toEqual({
+    expect(parseMetadata(content)).toEqual({
       lastUpdate: 'xyz',
       dependencies: ['./dep1.js', './dep2.js'],
     });
@@ -23,7 +23,7 @@ dep: ./dep1.js
  dep: ./dep2.js
 ---
 `;
-    expect(parseFileContent(content)).toEqual({
+    expect(parseMetadata(content)).toEqual({
       lastUpdate: 'xyz',
       dependencies: ['./dep1.js', './dep2.js'],
     });
