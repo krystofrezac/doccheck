@@ -82,8 +82,6 @@ const parseDependencies = async (
     metadata.dependencies.map(async dep => {
       const absolutePath = relativeToAbsolutePaths(path.dirname(filename), dep);
 
-      console.log('abs', filename, absolutePath);
-
       const log = await git.log({
         file: absolutePath,
         maxCount: 1,

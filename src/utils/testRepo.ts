@@ -2,23 +2,23 @@ import fs from 'fs';
 import { dirname, join } from 'path';
 import simpleGit, { SimpleGit } from 'simple-git';
 
-export const TEST_REPO_FOLDER = join(
-  dirname(require.main?.filename || ''),
-  'testRepo',
-);
+export const getRepoPath = (): string =>
+  join(
+    dirname(require.main?.filename || ''),
+    `testRepo-${process.env.JEST_WORKER_ID}`,
+  );
 
-export const createRepo = (): SimpleGit => {
-  fs.mkdirSync(TEST_REPO_FOLDER);
+export const createRepo = (repoPath: string): SimpleGit => {
+  fs.mkdirSync(repoPath);
 
-  return simpleGit()
-    .init([TEST_REPO_FOLDER])
-    .cwd({ path: TEST_REPO_FOLDER, root: true });
+  return simpleGit().init([repoPath]).cwd({ path: repoPath, root: true });
 };
-export const deleteRepo = (): void => {
-  fs.rmSync(TEST_REPO_FOLDER, { recursive: true, force: true });
+export const deleteRepo = (repoPath: string): void => {
+  fs.rmSync(repoPath, { recursive: true, force: true });
 };
 
 export const createDocumentationFile = (
+  repoPath: string,
   name: string,
   metadata: { updatedAfter: string; deps: string[] },
 ): string => {
@@ -29,10 +29,10 @@ export const createDocumentationFile = (
   content += `${deps}\n`;
   content += '---';
 
-  fs.writeFileSync(`${TEST_REPO_FOLDER}/${name}`, content, 'utf-8');
+  fs.writeFileSync(join(repoPath, name), content, 'utf-8');
   return name;
 };
-export const createFile = (name: string): string => {
-  fs.writeFileSync(`${TEST_REPO_FOLDER}/${name}`, '', 'utf-8');
+export const createFile = (repoPath: string, name: string): string => {
+  fs.writeFileSync(join(repoPath, name), '', 'utf-8');
   return name;
 };
