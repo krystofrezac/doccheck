@@ -98,6 +98,7 @@ const parseDependencies = async (
   return { updatedAfter: metadata.updatedAfter, dependencies };
 };
 
+// TODO: test this
 const getDocumentationLastUpdate = async (
   updatedAfter: string,
   git: SimpleGit,
@@ -110,10 +111,16 @@ const getDocumentationLastUpdate = async (
 
     lastUpdated = commits.all[commits.all.length - 1].date;
   } else {
-    const fileCommits = await git.log({
-      from: `${updatedAfter}~`,
-      to: 'HEAD',
-    });
+    const fileCommits = await git
+      .log({
+        from: `${updatedAfter}~`,
+        to: 'HEAD',
+      })
+      .then(res => res)
+      .catch(() =>
+        // updatedAfter is the first commit
+        git.log(),
+      );
 
     lastUpdated =
       fileCommits.all.length > 1
