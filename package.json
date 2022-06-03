@@ -10,7 +10,8 @@
     "npm": "8.11.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
+    "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix src",
     "test": "jest"
   },

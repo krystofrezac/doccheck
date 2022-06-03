@@ -6,8 +6,10 @@
     "strict": true,
     "rootDir": "src",
     "outDir": "dist",
+    "baseUrl": "src",
   },
-  "exclude": [
-    "**/*.test.ts"
-  ]
+  "include": [
+    "**/*.ts",
+    "**/*.js"
+  ],
 }

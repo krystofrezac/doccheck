@@ -1,11 +1,21 @@
 import yargs from 'yargs/yargs';
 
-import parseFile from './parseFile';
+import parseFile, { CheckOptions } from './parseFile';
 
-const checkFile = async (filename: string): Promise<void> => {
-  const metadata = await parseFile(filename);
+const checkFile = async (
+  filename: string,
+  options: CheckOptions,
+): Promise<void> => {
+  const metadata = await parseFile(filename, options);
 
   console.log(metadata);
+};
+
+export const checkFiles = async (
+  files: string[],
+  options: CheckOptions,
+): Promise<void> => {
+  await Promise.all(files.map(file => checkFile(file, options)));
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -18,7 +28,8 @@ yargs(process.argv.slice(2))
     () => {},
     argv => {
       if (!Array.isArray(argv.files)) return;
-      argv.files.forEach(file => checkFile(file));
+      // TODO: options
+      checkFiles(argv.files, {});
     },
   )
   .help().argv;

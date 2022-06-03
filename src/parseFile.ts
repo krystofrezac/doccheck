@@ -1,7 +1,11 @@
 import fs from 'fs';
-import path from 'path';
+import path, { join } from 'path';
 
-import simpleGit from 'simple-git';
+import simpleGit, { SimpleGit } from 'simple-git';
+
+export interface CheckOptions {
+  gitDir?: string;
+}
 
 // TODO: Rename interfaces
 interface Result {
@@ -72,11 +76,15 @@ const relativeToAbsolutePaths = (
 const parseDependencies = async (
   filename: string,
   metadata: Metadata,
+  git: SimpleGit,
 ): Promise<MetadataWithParsedDependencies> => {
   const dependencies = await Promise.all(
     metadata.dependencies.map(async dep => {
       const absolutePath = relativeToAbsolutePaths(path.dirname(filename), dep);
-      const log = await simpleGit().log({
+
+      console.log('abs', filename, absolutePath);
+
+      const log = await git.log({
         file: absolutePath,
         maxCount: 1,
       });
@@ -92,25 +100,52 @@ const parseDependencies = async (
   return { updatedAfter: metadata.updatedAfter, dependencies };
 };
 
-const parseFile = async (filename: string): Promise<Result> => {
-  const file = readFile(filename);
-  const metadata = parseMetadata(file);
-  const metadataWithDeps = await parseDependencies(filename, metadata);
+const getDocumentationLastUpdate = async (
+  updatedAfter: string,
+  git: SimpleGit,
+): Promise<Date> => {
+  let lastUpdated;
 
-  const fileCommits = await simpleGit().log({
-    from: `${metadataWithDeps.updatedAfter}~`,
-    to: 'HEAD',
-  });
+  // was created at first commit
+  if (updatedAfter === '') {
+    const commits = await git.log();
+
+    lastUpdated = commits.all[commits.all.length - 1].date;
+  } else {
+    const fileCommits = await git.log({
+      from: `${updatedAfter}~`,
+      to: 'HEAD',
+    });
+
+    lastUpdated =
+      fileCommits.all.length > 1
+        ? fileCommits.all[fileCommits.all.length - 2].date
+        : fileCommits.all[fileCommits.all.length - 1].date;
+  }
 
   // take next commit if already exists or take the commit
-  const lastUpdated =
-    fileCommits.all.length > 1
-      ? fileCommits.all[fileCommits.all.length - 2].date
-      : fileCommits.all[fileCommits.all.length - 1].date;
+
+  return new Date(lastUpdated);
+};
+
+const parseFile = async (
+  filename: string,
+  options: CheckOptions,
+): Promise<Result> => {
+  let git = simpleGit();
+  if (options.gitDir)
+    git = simpleGit().cwd({ path: options.gitDir, root: true });
+
+  const file = readFile(join(options.gitDir || '', filename));
+  const metadata = parseMetadata(file);
+  const metadataWithDeps = await parseDependencies(filename, metadata, git);
 
   return {
-    ...metadataWithDeps,
-    lastUpdate: new Date(lastUpdated),
+    lastUpdate: await getDocumentationLastUpdate(
+      metadataWithDeps.updatedAfter,
+      git,
+    ),
+    dependencies: metadataWithDeps.dependencies,
   };
 };
 
