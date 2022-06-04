@@ -7,7 +7,7 @@ export interface ParseFileOptions {
   gitDir?: string;
 }
 
-interface ParsedFile {
+export interface ParsedFile {
   lastUpdate?: Date;
   dependencies: { file: string; lastUpdate?: Date }[];
 }
