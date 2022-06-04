@@ -1,10 +1,10 @@
 import yargs from 'yargs/yargs';
 
-import parseFile, { CheckOptions } from './parseFile';
+import parseFile, { ParseFileOptions } from './parseFile';
 
 const checkFile = async (
   filename: string,
-  options: CheckOptions,
+  options: ParseFileOptions,
 ): Promise<void> => {
   const metadata = await parseFile(filename, options);
 
@@ -13,7 +13,7 @@ const checkFile = async (
 
 export const checkFiles = async (
   files: string[],
-  options: CheckOptions,
+  options: ParseFileOptions,
 ): Promise<void> => {
   await Promise.all(files.map(file => checkFile(file, options)));
 };

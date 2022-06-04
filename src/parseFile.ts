@@ -1,20 +1,14 @@
 import fs from 'fs';
 import path, { join } from 'path';
 
-import simpleGit, { SimpleGit } from 'simple-git';
+import simpleGit, { DefaultLogFields, LogResult, SimpleGit } from 'simple-git';
 
-export interface CheckOptions {
+export interface ParseFileOptions {
   gitDir?: string;
 }
 
-// TODO: Rename interfaces
-interface Result {
+interface ParsedFile {
   lastUpdate: Date;
-  dependencies: { file: string; lastUpdate?: Date }[];
-}
-
-interface MetadataWithParsedDependencies {
-  updatedAfter: string;
   dependencies: { file: string; lastUpdate?: Date }[];
 }
 
@@ -32,6 +26,9 @@ const readFile = (filename: string): string =>
   // TODO: handle exceptions
   fs.readFileSync(filename, 'utf8');
 
+/**
+ * Parse file metadata
+ */
 export const parseMetadata = (content: string): Metadata => {
   const metadataStartIndex = content.indexOf('---');
   const metadataEndIndex = content.indexOf('\n---', metadataStartIndex + 1);
@@ -68,19 +65,17 @@ export const parseMetadata = (content: string): Metadata => {
   return result as Metadata;
 };
 
-const relativeToAbsolutePaths = (
-  basePath: string,
-  relativePath: string,
-): string => relativePath.replace('./', `${basePath}/`);
-
-const parseDependencies = async (
+/**
+ * Get most recent dates when dependencies were changed in git
+ */
+const getDependenciesLastUpdates = async (
+  git: SimpleGit,
   filename: string,
   metadata: Metadata,
-  git: SimpleGit,
-): Promise<MetadataWithParsedDependencies> => {
-  const dependencies = await Promise.all(
+): Promise<{ file: string; lastUpdate?: Date }[]> =>
+  Promise.all(
     metadata.dependencies.map(async dep => {
-      const absolutePath = relativeToAbsolutePaths(path.dirname(filename), dep);
+      const absolutePath = dep.replace('./', `${path.dirname(filename)}/`);
 
       const log = await git.log({
         file: absolutePath,
@@ -95,62 +90,61 @@ const parseDependencies = async (
     }),
   );
 
-  return { updatedAfter: metadata.updatedAfter, dependencies };
-};
-
+/**
+ * Get last update date of documentation
+ */
 // TODO: test this
 const getDocumentationLastUpdate = async (
-  updatedAfter: string,
   git: SimpleGit,
+  { updatedAfter }: Metadata,
 ): Promise<Date> => {
-  let lastUpdated;
-
   // was created at first commit
   if (updatedAfter === '') {
     const commits = await git.log();
+    return new Date(commits.all[commits.all.length - 1].date);
+  }
 
-    lastUpdated = commits.all[commits.all.length - 1].date;
-  } else {
-    const fileCommits = await git
+  const getBeforeTheLastCommit = (
+    commits: ReadonlyArray<DefaultLogFields>,
+  ): DefaultLogFields =>
+    commits.length > 1
+      ? commits[commits.length - 2]
+      : commits[commits.length - 1];
+
+  return (
+    git
       .log({
         from: `${updatedAfter}~`,
         to: 'HEAD',
       })
-      .then(res => res)
-      .catch(() =>
-        // updatedAfter is the first commit
-        git.log(),
-      );
+      // was created after second commit
+      .then(commits => new Date(getBeforeTheLastCommit(commits.all).date))
+      // was created at second commit
+      .catch(async () => {
+        const commits = await git.log();
 
-    lastUpdated =
-      fileCommits.all.length > 1
-        ? fileCommits.all[fileCommits.all.length - 2].date
-        : fileCommits.all[fileCommits.all.length - 1].date;
-  }
-
-  // take next commit if already exists or take the commit
-
-  return new Date(lastUpdated);
+        return new Date(getBeforeTheLastCommit(commits.all).date);
+      })
+  );
 };
 
+/**
+ * Get last update dates from documentation metadata
+ */
 const parseFile = async (
   filename: string,
-  options: CheckOptions,
-): Promise<Result> => {
+  options: ParseFileOptions,
+): Promise<ParsedFile> => {
   let git = simpleGit();
   if (options.gitDir)
     git = simpleGit().cwd({ path: options.gitDir, root: true });
 
   const file = readFile(join(options.gitDir || '', filename));
   const metadata = parseMetadata(file);
-  const metadataWithDeps = await parseDependencies(filename, metadata, git);
 
   return {
-    lastUpdate: await getDocumentationLastUpdate(
-      metadataWithDeps.updatedAfter,
-      git,
-    ),
-    dependencies: metadataWithDeps.dependencies,
+    lastUpdate: await getDocumentationLastUpdate(git, metadata),
+    dependencies: await getDependenciesLastUpdates(git, filename, metadata),
   };
 };
 

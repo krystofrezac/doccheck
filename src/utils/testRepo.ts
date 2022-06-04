@@ -1,15 +1,12 @@
 import fs from 'fs';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import simpleGit, { CommitResult, SimpleGit } from 'simple-git';
 
 let index = 0;
 
 export const getRepoPath = (): string => {
   index += 1;
-  return join(
-    dirname(require.main?.filename || ''),
-    `testRepo-${process.env.JEST_WORKER_ID}-${index}`,
-  );
+  return join(process.cwd(), `testRepo-${process.env.JEST_WORKER_ID}-${index}`);
 };
 
 export const getGit = (repoPath: string): SimpleGit =>
@@ -59,7 +56,7 @@ export const createCommits = async (
   for (let i = 0; i < numberOfCommits; i += 1) {
     createFile(repoPath, 'file1');
     // eslint-disable-next-line no-await-in-loop
-    lastCommit = await git.add('.').commit('commit 1');
+    lastCommit = await git.add('.').commit(`commit ${i}`);
     // eslint-disable-next-line no-await-in-loop
     await wait();
   }
