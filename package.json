@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "colorette": "^2.0.17",
     "simple-git": "^3.7.1",
     "yargs": "^17.5.1"
   },

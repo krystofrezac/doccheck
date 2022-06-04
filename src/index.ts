@@ -1,3 +1,4 @@
+import { dim, green, red, underline, yellow } from 'colorette';
 import yargs from 'yargs/yargs';
 
 import parseFile, { ParsedFile, ParseFileOptions } from './parseFile';
@@ -40,16 +41,23 @@ const checkFiles = async (
   options: ParseFileOptions,
 ): Promise<void> => {
   const result = await Promise.all(files.map(file => checkFile(file, options)));
-  if (result.length !== 0)
+
+  const updateRequiredFiles = result.filter(file => file.updateRequired);
+  if (updateRequiredFiles.length !== 0)
     console.log(
-      'Documentation is not up to date. Check these files if they do not need to be updated!',
+      red(
+        'Documentation is not up to date. Check these files if they do not need to be updated!',
+      ),
     );
-  result
-    .filter(file => file.updateRequired)
-    .forEach(file => {
-      console.log(file.filename, '- These dependencies were updated:');
-      file.updatedDependencies.forEach(dep => console.log('  -', dep));
-    });
+  else console.log(green('Documentation is up to date.'));
+
+  updateRequiredFiles.forEach(file => {
+    console.log(
+      yellow(underline(file.filename)),
+      dim('- These dependencies were updated:'),
+    );
+    file.updatedDependencies.forEach(dep => console.log('  -', dep));
+  });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
