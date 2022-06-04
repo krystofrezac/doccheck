@@ -2,25 +2,12 @@ import fs from 'fs';
 import path, { join } from 'path';
 
 import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
-
-export interface ParseFileOptions {
-  gitDir?: string;
-}
-
-export interface ParsedFile {
-  lastUpdate?: Date;
-  dependencies: { file: string; lastUpdate?: Date }[];
-}
-
-interface Metadata {
-  updatedAfter: string;
-  dependencies: string[];
-}
-
-interface ParsingMetadata {
-  updatedAfter?: string;
-  dependencies: string[];
-}
+import {
+  Metadata,
+  ParsedFile,
+  ParseFileOptions,
+  ParsingMetadata,
+} from './types';
 
 const readFile = (filename: string): string =>
   // TODO: handle exceptions

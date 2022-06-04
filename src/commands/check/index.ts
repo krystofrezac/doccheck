@@ -1,15 +1,10 @@
-import parseFile, { ParsedFile, ParseFileOptions } from './parseFile';
-
-export interface FileCheckResult {
-  filename: string;
-  updateRequired: boolean;
-  updatedDependencies: string[];
-}
+import parseFile from './parseFile';
+import { ParsedFile, ParseFileOptions, CheckFileResult } from './types';
 
 export const shouldFileBeUpdated = (
   filename: string,
   parsedFile: ParsedFile,
-): FileCheckResult => {
+): CheckFileResult => {
   const fileLastUpdate = parsedFile.lastUpdate;
   if (!fileLastUpdate)
     return { filename, updateRequired: false, updatedDependencies: [] };
@@ -28,7 +23,7 @@ export const shouldFileBeUpdated = (
 const checkFile = async (
   filename: string,
   options: ParseFileOptions,
-): Promise<FileCheckResult> => {
+): Promise<CheckFileResult> => {
   const parsedFile = await parseFile(filename, options);
   return shouldFileBeUpdated(filename, parsedFile);
 };
