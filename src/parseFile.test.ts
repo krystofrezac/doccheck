@@ -1,3 +1,4 @@
+import exp from 'constants';
 import { SimpleGit } from 'simple-git';
 
 import {
@@ -31,6 +32,7 @@ dep: ./dep2.js
     const content = `
 ---
  updatedAfter :  xyz 
+
 dep: ./dep1.js 
  dep: ./dep2.js
 ---
@@ -111,7 +113,11 @@ describe('parseFile', () => {
 
     const result = await parseFile('doc', { gitDir: repoPath });
     expect(result.dependencies.length).toBe(1);
-    expect(result.lastUpdate < result.dependencies[0].lastUpdate!).toBeTruthy();
+    expect(result.dependencies[0].lastUpdate).not.toBeUndefined();
+    expect(result.lastUpdate).not.toBeUndefined();
+    expect(
+      result.lastUpdate! < result.dependencies[0].lastUpdate!,
+    ).toBeTruthy();
   });
 
   it('it should parse earlier date for dependency if dependency was created one commit earlier', async () => {
@@ -128,6 +134,23 @@ describe('parseFile', () => {
     const result = await parseFile('doc', { gitDir: repoPath });
 
     expect(result.dependencies.length).toBe(1);
-    expect(result.dependencies[0].lastUpdate! < result.lastUpdate).toBeTruthy();
+    expect(result.dependencies[0].lastUpdate).not.toBeUndefined();
+    expect(result.lastUpdate).not.toBeUndefined();
+    expect(
+      result.dependencies[0].lastUpdate! < result.lastUpdate!,
+    ).toBeTruthy();
+  });
+
+  it('should parse undefined dates when there are no commits', async () => {
+    createFile(repoPath, 'dep1');
+    createDocumentationFile(repoPath, 'doc', {
+      updatedAfter: '',
+      deps: ['./dep1'],
+    });
+    const result = await parseFile('doc', { gitDir: repoPath });
+
+    expect(result.dependencies.length).toBe(1);
+    expect(result.dependencies[0].lastUpdate).toBeUndefined();
+    expect(result.lastUpdate).toBeUndefined();
   });
 });

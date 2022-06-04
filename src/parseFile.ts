@@ -8,7 +8,7 @@ export interface ParseFileOptions {
 }
 
 interface ParsedFile {
-  lastUpdate: Date;
+  lastUpdate?: Date;
   dependencies: { file: string; lastUpdate?: Date }[];
 }
 
@@ -44,7 +44,7 @@ export const parseMetadata = (content: string): Metadata => {
   metadataRows.forEach(row => {
     let [key, value] = row.split(': ');
     key = key.trim();
-    value = value.trim();
+    value = value ? value.trim() : '';
 
     switch (key) {
       case 'updatedAfter':
@@ -77,16 +77,23 @@ const getDependenciesLastUpdates = async (
     metadata.dependencies.map(async dep => {
       const absolutePath = dep.replace('./', `${path.dirname(filename)}/`);
 
-      const log = await git.log({
-        file: absolutePath,
-        maxCount: 1,
-      });
-      const lastUpdateISO = log.latest?.date;
+      return (
+        git
+          .log({
+            file: absolutePath,
+            maxCount: 1,
+          })
+          .then(commits => {
+            const lastUpdateISO = commits.latest!.date; // latest always present - when no commit exception is raised
 
-      return {
-        file: absolutePath,
-        lastUpdate: lastUpdateISO ? new Date(lastUpdateISO) : undefined,
-      };
+            return {
+              file: absolutePath,
+              lastUpdate: new Date(lastUpdateISO),
+            };
+          })
+          // no commits in repo
+          .catch(() => ({ file: absolutePath, lastUpdate: undefined }))
+      );
     }),
   );
 
@@ -97,11 +104,16 @@ const getDependenciesLastUpdates = async (
 const getDocumentationLastUpdate = async (
   git: SimpleGit,
   { updatedAfter }: Metadata,
-): Promise<Date> => {
+): Promise<Date | undefined> => {
   // was created at first commit
   if (updatedAfter === '') {
-    const commits = await git.log();
-    return new Date(commits.all[commits.all.length - 1].date);
+    return (
+      git
+        .log()
+        .then(commits => new Date(commits.all[commits.all.length - 1].date))
+        // no commits in repo
+        .catch(() => undefined)
+    );
   }
 
   const getBeforeTheLastCommit = (
