@@ -100,10 +100,9 @@ const getDependenciesLastUpdates = async (
 /**
  * Get last update date of documentation
  */
-// TODO: test this
-const getDocumentationLastUpdate = async (
+export const getDocumentationLastUpdate = async (
   git: SimpleGit,
-  { updatedAfter }: Metadata,
+  updatedAfter: string,
 ): Promise<Date | undefined> => {
   // was created at first commit
   if (updatedAfter === '') {
@@ -125,6 +124,7 @@ const getDocumentationLastUpdate = async (
 
   return (
     git
+      // log from updatedAfter to HEAD
       .log({
         from: `${updatedAfter}~`,
         to: 'HEAD',
@@ -155,7 +155,7 @@ const parseFile = async (
   const metadata = parseMetadata(file);
 
   return {
-    lastUpdate: await getDocumentationLastUpdate(git, metadata),
+    lastUpdate: await getDocumentationLastUpdate(git, metadata.updatedAfter),
     dependencies: await getDependenciesLastUpdates(git, filename, metadata),
   };
 };

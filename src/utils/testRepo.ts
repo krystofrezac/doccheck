@@ -49,6 +49,8 @@ export const createFile = (repoPath: string, name: string): string => {
   fs.writeFileSync(join(repoPath, name), '', 'utf-8');
   return name;
 };
+
+let commitIndex = 0;
 export const createCommits = async (
   repoPath: string,
   numberOfCommits: number,
@@ -58,9 +60,10 @@ export const createCommits = async (
   let lastCommit: CommitResult = {} as CommitResult;
 
   for (let i = 0; i < numberOfCommits; i += 1) {
-    createFile(repoPath, `file${i}`);
+    commitIndex += 1;
+    createFile(repoPath, `__file${commitIndex}`);
     // eslint-disable-next-line no-await-in-loop
-    lastCommit = await git.add('.').commit(`commit ${i}`);
+    lastCommit = await git.add('.').commit(`commit ${commitIndex}`);
     // eslint-disable-next-line no-await-in-loop
     await wait();
   }

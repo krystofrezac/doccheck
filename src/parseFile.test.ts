@@ -1,4 +1,3 @@
-import exp from 'constants';
 import { SimpleGit } from 'simple-git';
 
 import {
@@ -11,7 +10,10 @@ import {
   wait,
 } from 'utils/testRepo';
 
-import parseFile, { parseMetadata } from './parseFile';
+import parseFile, {
+  getDocumentationLastUpdate,
+  parseMetadata,
+} from './parseFile';
 
 describe('parseMetadata', () => {
   it('should parse normal file', () => {
@@ -41,6 +43,70 @@ dep: ./dep1.js
       updatedAfter: 'xyz',
       dependencies: ['./dep1.js', './dep2.js'],
     });
+  });
+});
+
+describe('getDocumentationLastUpdate', () => {
+  let git: SimpleGit;
+  let repoPath: string;
+
+  beforeEach(async () => {
+    repoPath = getRepoPath();
+    deleteRepo(repoPath);
+    git = await createRepo(repoPath);
+  });
+  afterEach(() => {
+    deleteRepo(repoPath);
+  });
+
+  it('should return undefined when no repo has no commits', async () => {
+    const result = await getDocumentationLastUpdate(git, '');
+    expect(result).toBeUndefined();
+  });
+
+  it('should return date of first commit when updatedAfter is empty', async () => {
+    await createCommits(repoPath, 1);
+    const commitDate = new Date((await git.log()).latest!.date);
+
+    const result = await getDocumentationLastUpdate(git, '');
+    expect(result).toEqual(commitDate);
+  });
+
+  it('should return date of updatedAfter commit when it is last commit', async () => {
+    const lastCommit = await createCommits(repoPath, 2);
+
+    const commitDate = new Date(
+      (
+        await git.log({
+          from: `${lastCommit.commit}~`,
+          to: lastCommit.commit,
+        })
+      ).latest!.date,
+    );
+
+    const result = await getDocumentationLastUpdate(git, lastCommit.commit);
+    expect(result).toEqual(commitDate);
+  });
+
+  it('should return date of commit after updatedAfter when documentation was not create at last commit', async () => {
+    const documentationCommit = await createCommits(repoPath, 1);
+    const afterDocumentationCommit = await createCommits(repoPath, 1);
+    await createCommits(repoPath, 1);
+
+    const commitDate = new Date(
+      (
+        await git.log({
+          from: `${afterDocumentationCommit.commit}~`,
+          to: afterDocumentationCommit.commit,
+        })
+      ).latest!.date,
+    );
+
+    const result = await getDocumentationLastUpdate(
+      git,
+      documentationCommit.commit,
+    );
+    expect(result).toEqual(commitDate);
   });
 });
 

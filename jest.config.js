@@ -4,4 +4,5 @@ module.exports = {
   testEnvironment: 'node',
   moduleDirectories: ['node_modules', 'src'],
   collectCoverage: true,
+  testTimeout: 20_000,
 };
