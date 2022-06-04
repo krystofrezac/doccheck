@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { dim, green, red, underline, yellow } from 'colorette';
 import { ParseFileOptions } from 'commands/check/types';
 import yargs from 'yargs/yargs';
