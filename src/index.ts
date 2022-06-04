@@ -11,7 +11,7 @@ const checkFile = async (
   console.log(metadata);
 };
 
-export const checkFiles = async (
+const checkFiles = async (
   files: string[],
   options: ParseFileOptions,
 ): Promise<void> => {

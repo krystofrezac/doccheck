@@ -46,10 +46,10 @@ describe('parseFile', () => {
   let git: SimpleGit;
   let repoPath: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     repoPath = getRepoPath();
     deleteRepo(repoPath);
-    git = createRepo(repoPath);
+    git = await createRepo(repoPath);
   });
   afterEach(() => {
     deleteRepo(repoPath);

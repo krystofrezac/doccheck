@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path, { join } from 'path';
 
-import simpleGit, { DefaultLogFields, LogResult, SimpleGit } from 'simple-git';
+import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
 
 export interface ParseFileOptions {
   gitDir?: string;

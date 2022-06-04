@@ -9,13 +9,17 @@ export const getRepoPath = (): string => {
   return join(process.cwd(), `testRepo-${process.env.JEST_WORKER_ID}-${index}`);
 };
 
-export const getGit = (repoPath: string): SimpleGit =>
-  simpleGit().cwd({ path: repoPath, root: true });
+export const getGit = async (repoPath: string): Promise<SimpleGit> => {
+  const git = simpleGit();
+  await git.cwd({ path: repoPath, root: true });
+  return git;
+};
 
-export const createRepo = (repoPath: string): SimpleGit => {
+export const createRepo = async (repoPath: string): Promise<SimpleGit> => {
   fs.mkdirSync(repoPath);
 
-  return simpleGit().init([repoPath]).cwd({ path: repoPath, root: true });
+  await simpleGit().init([repoPath]);
+  return getGit(repoPath);
 };
 export const deleteRepo = (repoPath: string): void => {
   fs.rmSync(repoPath, { recursive: true, force: true });
@@ -49,12 +53,12 @@ export const createCommits = async (
   repoPath: string,
   numberOfCommits: number,
 ): Promise<CommitResult> => {
-  const git = getGit(repoPath);
+  const git = await getGit(repoPath);
 
   let lastCommit: CommitResult = {} as CommitResult;
 
   for (let i = 0; i < numberOfCommits; i += 1) {
-    createFile(repoPath, 'file1');
+    createFile(repoPath, `file${i}`);
     // eslint-disable-next-line no-await-in-loop
     lastCommit = await git.add('.').commit(`commit ${i}`);
     // eslint-disable-next-line no-await-in-loop
