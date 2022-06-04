@@ -1,4 +1,4 @@
-import { shouldFileBeUpdated } from 'index';
+import { shouldFileBeUpdated } from './index';
 
 describe('shouldFileBeUpdated', () => {
   it('should not require update if documentation id not committed', () => {
