@@ -13,6 +13,7 @@
     "build": "tsc --project tsconfig.build.json",
     "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix src",
+    "lint:ci": "eslint --ext .js,.ts src",
     "test": "jest"
   },
   "dependencies": {

@@ -1,3 +1,3 @@
-export interface createDocumentationOptions {
+export interface CreateDocumentationOptions {
   gitDir?: string;
 }

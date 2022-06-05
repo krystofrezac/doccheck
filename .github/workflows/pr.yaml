@@ -1,0 +1,71 @@
+name: Pull Request
+on: pull_request
+
+jobs:
+  install:
+    name: npm install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.15.1
+      - id: install_cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-install-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-install-
+            ${{ runner.os }}-
+
+      - name: Install
+        if: steps.install_cache.outputs.cache-hit != 'true'
+        run: npm install
+
+  eslint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Restore node_modules
+      - uses: actions/cache@v3
+        with: 
+          path: node_modules
+          key: ${{ runner.os }}-install-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-install-
+            ${{ runner.os }}-
+      - run: npm run lint:ci
+
+  typescript:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Restore node_modules
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-install-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-install-
+            ${{ runner.os }}-
+      - run: npm run ts-verify
+
+  tests:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Restore node_modules
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-install-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-install-
+            ${{ runner.os }}-
+      - run: git config --global user.email "test@test.com"
+      - run: git config --global user.name "Test Test"
+      - run: npm run test

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import simpleGit, { SimpleGit } from 'simple-git';
-import { createDocumentationOptions } from './types';
+import { CreateDocumentationOptions } from './types';
 
 export const getUpdatedAfter = async (git: SimpleGit): Promise<string> =>
   git
@@ -18,7 +18,7 @@ export const getUpdatedAfter = async (git: SimpleGit): Promise<string> =>
 
 const createDocumentation = async (
   fileName: string,
-  options: createDocumentationOptions,
+  options: CreateDocumentationOptions,
 ): Promise<void> => {
   let git = simpleGit();
   if (options.gitDir)

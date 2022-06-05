@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { dim, green, red, underline, yellow } from 'colorette';
 import { ParseFileOptions } from 'commands/check/types';
-import { createDocumentationOptions } from 'commands/create/types';
+import { CreateDocumentationOptions } from 'commands/create/types';
 import yargs from 'yargs/yargs';
 
 import checkFile from './commands/check';
@@ -33,7 +33,7 @@ const checkFiles = async (
 
 const createDocumentationCommand = async (
   fileName: string,
-  options: createDocumentationOptions,
+  options: CreateDocumentationOptions,
 ): Promise<void> => {
   await createDocumentation(fileName, options);
   console.log(green('Documentation file was created successfully.'));
