@@ -35,7 +35,7 @@ yargs(process.argv.slice(2))
   .usage('$0 <cmd> [args]')
   .command(
     'check [files..]',
-    'Check if files are up to date',
+    'Check if documentation files are up to date',
     () => {},
     argv => {
       if (!Array.isArray(argv.files)) return;
@@ -43,4 +43,11 @@ yargs(process.argv.slice(2))
       checkFiles(argv.files, {});
     },
   )
+  .command('update [files..]', 'Update documentation files')
+  .command('create [file]', 'Create documentation file')
+  .command(
+    'add dependency [file] [dependency]',
+    'Add dependency to documentation file',
+  )
+  .demandCommand()
   .help().argv;
