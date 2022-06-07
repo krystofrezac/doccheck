@@ -1,20 +1,7 @@
 import fs from 'fs';
-import simpleGit, { SimpleGit } from 'simple-git';
+import simpleGit from 'simple-git';
+import getLastCommitHash from '../../utils/git';
 import { CreateDocumentationOptions } from './types';
-
-export const getUpdatedAfter = async (git: SimpleGit): Promise<string> =>
-  git
-    .log({ from: 'HEAD~', to: 'HEAD' })
-    .then(log => log.latest?.hash ?? '')
-    // repo has less than 2 commits
-    .catch(() =>
-      git
-        .log()
-        // repo has 1 commit
-        .then(log => log.latest?.hash ?? '')
-        // repo has no commits
-        .catch(() => ''),
-    );
 
 const createDocumentation = async (
   fileName: string,
@@ -24,7 +11,7 @@ const createDocumentation = async (
   if (options.gitDir)
     git = simpleGit().cwd({ path: options.gitDir, root: true });
 
-  const updatedAfter = await getUpdatedAfter(git);
+  const updatedAfter = await getLastCommitHash(git);
 
   let metadata = '---\n';
   metadata += `updatedAfter: ${updatedAfter}\n`;

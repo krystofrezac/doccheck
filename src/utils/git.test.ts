@@ -1,13 +1,13 @@
 import { SimpleGit } from 'simple-git';
+import getLastCommitHash from 'utils/git';
 import {
   createCommits,
   createRepo,
   deleteRepo,
   getRepoPath,
 } from 'utils/testRepo';
-import { getUpdatedAfter } from '.';
 
-describe('getUpdatedAfter', () => {
+describe('getLastCommitHash', () => {
   let git: SimpleGit;
   let repoPath: string;
 
@@ -21,18 +21,18 @@ describe('getUpdatedAfter', () => {
   });
 
   it('should return empty string when repo has no commit', async () => {
-    expect(await getUpdatedAfter(git)).toBe('');
+    expect(await getLastCommitHash(git)).toBe('');
   });
 
   it('should return current commit when repo has one commit', async () => {
     const commit = await createCommits(repoPath, 1);
 
-    expect(await getUpdatedAfter(git)).toBe(commit.commit);
+    expect(await getLastCommitHash(git)).toBe(commit.commit);
   });
 
   it('should return current commit when repo has two commit', async () => {
     const commit = await createCommits(repoPath, 2);
 
-    expect(await getUpdatedAfter(git)).toBe(commit.commit);
+    expect(await getLastCommitHash(git)).toBe(commit.commit);
   });
 });

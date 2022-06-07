@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { join } from 'path';
 import simpleGit, { CommitResult, SimpleGit } from 'simple-git';
+import { Metadata, stringifyMetadata } from './metadata';
 
 let index = 0;
 
@@ -33,16 +34,9 @@ export const wait = (time: number = 2000): Promise<void> =>
 export const createDocumentationFile = (
   repoPath: string,
   name: string,
-  metadata: { updatedAfter: string; deps: string[] },
+  metadata: Metadata,
 ): string => {
-  const deps = metadata.deps.map(dep => `dep: ${dep}`).join('\n');
-
-  let content = '---\n';
-  content += `updatedAfter: ${metadata.updatedAfter}\n`;
-  content += `${deps}\n`;
-  content += '---';
-
-  fs.writeFileSync(join(repoPath, name), content, 'utf-8');
+  fs.writeFileSync(join(repoPath, name), stringifyMetadata(metadata), 'utf-8');
   return name;
 };
 export const createFile = (repoPath: string, name: string): string => {

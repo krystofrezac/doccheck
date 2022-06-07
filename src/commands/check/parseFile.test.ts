@@ -1,4 +1,5 @@
 import { SimpleGit } from 'simple-git';
+import { parseMetadata } from 'utils/metadata';
 
 import {
   createCommits,
@@ -10,10 +11,7 @@ import {
   wait,
 } from 'utils/testRepo';
 
-import parseFile, {
-  getDocumentationLastUpdate,
-  parseMetadata,
-} from './parseFile';
+import parseFile, { getDocumentationLastUpdate } from './parseFile';
 
 describe('parseMetadata', () => {
   it('should parse normal file', () => {
@@ -127,7 +125,7 @@ describe('parseFile', () => {
     createFile(repoPath, 'dep1');
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: '',
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     await git.add('.').commit('commit 1');
 
@@ -142,7 +140,7 @@ describe('parseFile', () => {
     createFile(repoPath, 'dep1');
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: lastCommit?.commit,
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     await git.add('.').commit('commit 2');
 
@@ -157,7 +155,7 @@ describe('parseFile', () => {
     createFile(repoPath, 'dep1');
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: lastCommit.commit,
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     await git.add('.').commit('commit 3');
 
@@ -169,7 +167,7 @@ describe('parseFile', () => {
   it('it should parse earlier date for documentation if documentation was created one commit earlier', async () => {
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: '',
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     await git.add('.').commit('commit 1');
     await wait();
@@ -193,7 +191,7 @@ describe('parseFile', () => {
 
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: firstCommit.commit,
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     await git.add('.').commit('commit 2');
 
@@ -211,7 +209,7 @@ describe('parseFile', () => {
     createFile(repoPath, 'dep1');
     createDocumentationFile(repoPath, 'doc', {
       updatedAfter: '',
-      deps: ['./dep1'],
+      dependencies: ['./dep1'],
     });
     const result = await parseFile('doc', { gitDir: repoPath });
 
