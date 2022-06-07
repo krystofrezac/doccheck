@@ -3,6 +3,8 @@ import { dim, green, red, underline, yellow } from 'colorette';
 import { ParseFileOptions } from 'commands/check/types';
 import { CreateDocumentationOptions } from 'commands/create/types';
 import yargs from 'yargs/yargs';
+import { UpdateFileOptions } from 'commands/update/types';
+import updateFile from './commands/update';
 
 import checkFile from './commands/check';
 import createDocumentation from './commands/create';
@@ -31,6 +33,15 @@ const checkFiles = async (
   });
 };
 
+const updateFiles = async (
+  files: string[],
+  options: UpdateFileOptions,
+): Promise<void> => {
+  await Promise.resolve(files.map(fileName => updateFile(fileName, options)));
+
+  console.log(green('Documentation files updated successfully.'));
+};
+
 const createDocumentationCommand = async (
   fileName: string,
   options: CreateDocumentationOptions,
@@ -53,13 +64,23 @@ yargs(process.argv.slice(2))
       checkFiles(argv.files, {});
     },
   )
-  .command('update [files..]', 'Update documentation files')
+  .command(
+    'update [files..]',
+    'Update documentation files',
+    () => {},
+    argv => {
+      if (!Array.isArray(argv.files)) return;
+      // TODO: options
+      updateFiles(argv.files, {});
+    },
+  )
   .command(
     'create [file]',
     'Create documentation file',
     () => {},
     argv => {
       if (typeof argv.file === 'string')
+        // TODO: options
         createDocumentationCommand(argv.file, {});
     },
   )

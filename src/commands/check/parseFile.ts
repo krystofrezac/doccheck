@@ -1,56 +1,13 @@
 import fs from 'fs';
 import path, { join } from 'path';
-
 import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
-import {
-  Metadata,
-  ParsedFile,
-  ParseFileOptions,
-  ParsingMetadata,
-} from './types';
+
+import { Metadata, parseMetadata } from '../../utils/metadata';
+import { ParsedFile, ParseFileOptions } from './types';
 
 const readFile = (filename: string): string =>
   // TODO: handle exceptions
   fs.readFileSync(filename, 'utf8');
-
-/**
- * Parse file metadata
- */
-export const parseMetadata = (content: string): Metadata => {
-  const metadataStartIndex = content.indexOf('---');
-  const metadataEndIndex = content.indexOf('\n---', metadataStartIndex + 1);
-
-  const metadataContent = content.substring(
-    content.indexOf('\n', metadataStartIndex) + 1,
-    metadataEndIndex,
-  );
-
-  const result: ParsingMetadata = { dependencies: [] };
-
-  const metadataRows = metadataContent.split('\n');
-  metadataRows.forEach(row => {
-    let [key, value] = row.split(': ');
-    key = key.trim();
-    value = value ? value.trim() : '';
-
-    switch (key) {
-      case 'updatedAfter':
-        result.updatedAfter = value;
-        break;
-      case 'dep':
-        result.dependencies.push(value);
-        break;
-      default:
-        break;
-    }
-  });
-
-  if (result.updatedAfter === undefined)
-    throw new Error('updateAfter is missing');
-
-  // TODO: find more optimal way to silence TS
-  return result as Metadata;
-};
 
 /**
  * Get most recent dates when dependencies were changed in git

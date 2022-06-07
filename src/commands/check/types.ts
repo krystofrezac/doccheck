@@ -12,13 +12,3 @@ export interface ParsedFile {
   lastUpdate?: Date;
   dependencies: { file: string; lastUpdate?: Date }[];
 }
-
-export interface Metadata {
-  updatedAfter: string;
-  dependencies: string[];
-}
-
-export interface ParsingMetadata {
-  updatedAfter?: string;
-  dependencies: string[];
-}
