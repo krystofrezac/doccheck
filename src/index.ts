@@ -2,13 +2,12 @@
 import { dim, green, red, underline, yellow } from 'colorette';
 import yargs from 'yargs/yargs';
 
-import { ParseFileOptions } from 'commands/check/types';
-import { CreateDocumentationOptions } from 'commands/create/types';
-import { UpdateFileOptions } from 'commands/update/types';
-
 import checkFile from './commands/check';
+import { ParseFileOptions } from './commands/check/types';
 import createDocumentation from './commands/create';
+import { CreateDocumentationOptions } from './commands/create/types';
 import updateFile from './commands/update';
+import { UpdateFileOptions } from './commands/update/types';
 
 const checkFiles = async (
   files: string[],
