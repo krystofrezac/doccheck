@@ -1,6 +1,6 @@
 import { SimpleGit } from 'simple-git';
 
-import { parseMetadata } from 'utils/metadata';
+import { parseMetadata } from '../../utils/metadata';
 import {
   createCommits,
   createDocumentationFile,
@@ -9,7 +9,7 @@ import {
   deleteRepo,
   getRepoPath,
   wait,
-} from 'utils/testRepo';
+} from '../../utils/testRepo';
 
 import parseFile, { getDocumentationLastUpdate } from './parseFile';
 

@@ -1,12 +1,7 @@
 import { SimpleGit } from 'simple-git';
 
-import getLastCommitHash from 'utils/git';
-import {
-  createCommits,
-  createRepo,
-  deleteRepo,
-  getRepoPath,
-} from 'utils/testRepo';
+import getLastCommitHash from './git';
+import { createCommits, createRepo, deleteRepo, getRepoPath } from './testRepo';
 
 describe('getLastCommitHash', () => {
   let git: SimpleGit;

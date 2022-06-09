@@ -7,7 +7,7 @@ import {
   createRepo,
   deleteRepo,
   getRepoPath,
-} from 'utils/testRepo';
+} from '../../utils/testRepo';
 
 import updateFile from '.';
 
