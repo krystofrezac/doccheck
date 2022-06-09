@@ -1,8 +1,10 @@
 import fs from 'fs';
 import path, { join } from 'path';
+
 import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
 
 import { Metadata, parseMetadata } from '../../utils/metadata';
+
 import { ParsedFile, ParseFileOptions } from './types';
 
 const readFile = (filename: string): string =>

@@ -1,4 +1,5 @@
 import { SimpleGit } from 'simple-git';
+
 import getLastCommitHash from 'utils/git';
 import {
   createCommits,

@@ -1,6 +1,6 @@
 import { SimpleGit } from 'simple-git';
-import { parseMetadata } from 'utils/metadata';
 
+import { parseMetadata } from 'utils/metadata';
 import {
   createCommits,
   createDocumentationFile,

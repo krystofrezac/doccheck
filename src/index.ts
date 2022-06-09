@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import { dim, green, red, underline, yellow } from 'colorette';
+import yargs from 'yargs/yargs';
+
 import { ParseFileOptions } from 'commands/check/types';
 import { CreateDocumentationOptions } from 'commands/create/types';
-import yargs from 'yargs/yargs';
 import { UpdateFileOptions } from 'commands/update/types';
-import updateFile from './commands/update';
 
 import checkFile from './commands/check';
 import createDocumentation from './commands/create';
+import updateFile from './commands/update';
 
 const checkFiles = async (
   files: string[],
@@ -83,10 +84,6 @@ yargs(process.argv.slice(2))
         // TODO: options
         createDocumentationCommand(argv.file, {});
     },
-  )
-  .command(
-    'add dependency [file] [dependency]',
-    'Add dependency to documentation file',
   )
   .demandCommand()
   .help().argv;

@@ -1,12 +1,15 @@
 import fs from 'fs';
 import { join } from 'path';
+
 import simpleGit from 'simple-git';
+
+import getLastCommitHash from '../../utils/git';
 import {
   deleteMetadata,
   parseMetadata,
   stringifyMetadata,
 } from '../../utils/metadata';
-import getLastCommitHash from '../../utils/git';
+
 import { UpdateFileOptions } from './types';
 
 const updateFile = async (
