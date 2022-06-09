@@ -84,9 +84,5 @@ yargs(process.argv.slice(2))
         createDocumentationCommand(argv.file, {});
     },
   )
-  .command(
-    'add dependency [file] [dependency]',
-    'Add dependency to documentation file',
-  )
   .demandCommand()
   .help().argv;
