@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
+
 import {
   createCommits,
   createDocumentationFile,
@@ -7,6 +8,7 @@ import {
   deleteRepo,
   getRepoPath,
 } from 'utils/testRepo';
+
 import updateFile from '.';
 
 describe('updateFile', () => {

@@ -10,10 +10,10 @@
     "npm": "8.11.0"
   },
   "scripts": {
-    "build": "tsc",
-    "ts-verify": "tsc --noEmit tsconfig.dev.json",
+    "build": "tsc --project tsconfig.build.json",
+    "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix .",
-    "lint:ci": "eslint --ext .js,.ts .",
+    "lint:ci": "eslint --ext .js,.ts src",
     "test": "jest"
   },
   "dependencies": {

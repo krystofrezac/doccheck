@@ -1,5 +1,5 @@
 import parseFile from './parseFile';
-import { ParsedFile, ParseFileOptions, CheckFileResult } from './types';
+import { CheckFileResult, ParsedFile, ParseFileOptions } from './types';
 
 export const shouldFileBeUpdated = (
   filename: string,

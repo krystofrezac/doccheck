@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { join } from 'path';
+
 import simpleGit, { CommitResult, SimpleGit } from 'simple-git';
+
 import { Metadata, stringifyMetadata } from './metadata';
 
 let index = 0;

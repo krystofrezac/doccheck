@@ -1,6 +1,9 @@
 import fs from 'fs';
+
 import simpleGit from 'simple-git';
+
 import getLastCommitHash from '../../utils/git';
+
 import { CreateDocumentationOptions } from './types';
 
 const createDocumentation = async (
