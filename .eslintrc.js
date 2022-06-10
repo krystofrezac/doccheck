@@ -27,10 +27,8 @@ module.exports = {
         groups: [
           // Node.js builtins
           [`^(${require('module').builtinModules.join('|')})(/|$)`],
-          // Packages. `react` related packages come first.
+          // Packages
           ['^@?\\w'],
-          // Absolute imports
-          ['^(commands|utils)(/.*|$)'],
           // Side effect imports.
           ['^\\u0000'],
           // Parent imports. Put `..` last.
