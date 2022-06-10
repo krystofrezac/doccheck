@@ -14,14 +14,19 @@ const readFile = (filename: string): string =>
 /**
  * Get most recent dates when dependencies were changed in git
  */
-const getDependenciesLastUpdates = async (
+export const getDependenciesLastUpdates = async (
   git: SimpleGit,
   filename: string,
   metadata: Metadata,
 ): Promise<{ file: string; lastUpdate?: Date }[]> =>
   Promise.all(
     metadata.dependencies.map(async dep => {
-      const absolutePath = dep.replace('./', `${path.dirname(filename)}/`);
+      let absolutePath = dep;
+
+      if (dep.startsWith('../'))
+        absolutePath = dep.replace('../', `${path.dirname(filename)}/../`);
+      if (dep.startsWith('./'))
+        absolutePath = dep.replace('./', `${path.dirname(filename)}/`);
 
       return (
         git
