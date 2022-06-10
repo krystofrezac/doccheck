@@ -10,13 +10,14 @@ import { CreateDocumentationOptions } from './commands/create/types';
 import updateFile from './commands/update';
 import { UpdateFileOptions } from './commands/update/types';
 
-const globFiles = (files: string[]): Promise<string[]> => fastGlob(files);
+const globFiles = (files: string[], basePath?: string): Promise<string[]> =>
+  fastGlob(files, { cwd: basePath });
 
 const checkFiles = async (
   filePatterns: string[],
   options: ParseFileOptions,
 ): Promise<void> => {
-  const files = await globFiles(filePatterns);
+  const files = await globFiles(filePatterns, options.gitDir);
   const result = await Promise.all(files.map(file => checkFile(file, options)));
 
   const updateRequiredFiles = result.filter(file => file.updateRequired);
@@ -59,14 +60,20 @@ const createDocumentationCommand = async (
 yargs(process.argv.slice(2))
   .scriptName('doccheck')
   .usage('$0 <cmd> [args]')
+
+  .option('git-dir', {
+    type: 'string',
+    description: 'Path to git versioned directory (parent of .git)',
+  })
+
   .command(
     'check [filePatterns..]',
     'Check if documentation files are up to date',
     () => {},
     argv => {
       if (!Array.isArray(argv.filePatterns)) return;
-      // TODO: options
-      checkFiles(argv.filePatterns, {});
+      console.log(argv.gitDir);
+      checkFiles(argv.filePatterns, { gitDir: argv.gitDir });
     },
   )
   .command(
@@ -75,8 +82,7 @@ yargs(process.argv.slice(2))
     () => {},
     argv => {
       if (!Array.isArray(argv.files)) return;
-      // TODO: options
-      updateFiles(argv.files, {});
+      updateFiles(argv.files, { gitDir: argv.gitDir });
     },
   )
   .command(
@@ -85,8 +91,7 @@ yargs(process.argv.slice(2))
     () => {},
     argv => {
       if (typeof argv.file === 'string')
-        // TODO: options
-        createDocumentationCommand(argv.file, {});
+        createDocumentationCommand(argv.file, { gitDir: argv.gitDir });
     },
   )
   .demandCommand()
