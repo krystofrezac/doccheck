@@ -69,29 +69,42 @@ yargs(process.argv.slice(2))
   .command(
     'check [filePatterns..]',
     'Check if documentation files are up to date',
-    () => {},
+    y =>
+      y.positional('filePatterns', {
+        type: 'string',
+        array: true,
+        description: 'File patterns to check',
+      }),
     argv => {
-      if (!Array.isArray(argv.filePatterns)) return;
-      console.log(argv.gitDir);
+      if (!argv.filePatterns) return;
       checkFiles(argv.filePatterns, { gitDir: argv.gitDir });
     },
   )
   .command(
     'update [files..]',
     'Update documentation files',
-    () => {},
+    y =>
+      y.positional('files', {
+        type: 'string',
+        array: true,
+        description: 'Path to files to update',
+      }),
     argv => {
-      if (!Array.isArray(argv.files)) return;
+      if (!argv.files) return;
       updateFiles(argv.files, { gitDir: argv.gitDir });
     },
   )
   .command(
     'create [file]',
     'Create documentation file',
-    () => {},
+    y =>
+      y.positional('file', {
+        type: 'string',
+        description: 'File path',
+      }),
     argv => {
-      if (typeof argv.file === 'string')
-        createDocumentationCommand(argv.file, { gitDir: argv.gitDir });
+      if (!argv.file) return;
+      createDocumentationCommand(argv.file, { gitDir: argv.gitDir });
     },
   )
   .demandCommand()
