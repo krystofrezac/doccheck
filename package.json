@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "colorette": "^2.0.17",
+    "fast-glob": "^3.2.11",
     "simple-git": "^3.7.1",
     "yargs": "^17.5.1"
   },
