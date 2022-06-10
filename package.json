@@ -14,7 +14,8 @@
     "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix .",
     "lint:ci": "eslint --ext .js,.ts src",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "dependencies": {
     "colorette": "^2.0.17",
@@ -35,6 +36,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.0",
     "prettier": "^2.6.2",
     "ts-jest": "^28.0.3",
