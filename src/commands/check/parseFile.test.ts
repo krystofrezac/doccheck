@@ -1,4 +1,4 @@
-import { SimpleGit } from 'simple-git';
+import simpleGit, { SimpleGit } from 'simple-git';
 
 import { parseMetadata } from '../../utils/metadata';
 import {
@@ -11,7 +11,10 @@ import {
   wait,
 } from '../../utils/testRepo';
 
-import parseFile, { getDocumentationLastUpdate } from './parseFile';
+import parseFile, {
+  getDependenciesLastUpdates,
+  getDocumentationLastUpdate,
+} from './parseFile';
 
 describe('parseMetadata', () => {
   it('should parse normal file', () => {
@@ -41,6 +44,42 @@ dep: ./dep1.js
       updatedAfter: 'xyz',
       dependencies: ['./dep1.js', './dep2.js'],
     });
+  });
+});
+
+describe('getDependenciesLastUpdates', () => {
+  const git = simpleGit();
+
+  it('should resolve absolute dependency at root', async () => {
+    const result = await getDependenciesLastUpdates(git, 'doc', {
+      updatedAfter: '',
+      dependencies: ['dep'],
+    });
+    expect(result[0].file).toBe('dep');
+  });
+
+  it('should resolve nested absolute dependency', async () => {
+    const result = await getDependenciesLastUpdates(git, 'doc', {
+      updatedAfter: '',
+      dependencies: ['deps/dep'],
+    });
+    expect(result[0].file).toBe('deps/dep');
+  });
+
+  it('should resolve relative dependency at same level', async () => {
+    const result = await getDependenciesLastUpdates(git, 'src/doc', {
+      updatedAfter: '',
+      dependencies: ['./dep'],
+    });
+    expect(result[0].file).toBe('src/dep');
+  });
+
+  it('should resolve relative dependency at upper level', async () => {
+    const result = await getDependenciesLastUpdates(git, 'docs/doc', {
+      updatedAfter: '',
+      dependencies: ['../dep'],
+    });
+    expect(result[0].file).toBe('docs/../dep');
   });
 });
 
