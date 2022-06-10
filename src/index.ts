@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { dim, green, red, underline, yellow } from 'colorette';
+import fastGlob from 'fast-glob';
 import yargs from 'yargs/yargs';
 
 import checkFile from './commands/check';
@@ -9,10 +10,13 @@ import { CreateDocumentationOptions } from './commands/create/types';
 import updateFile from './commands/update';
 import { UpdateFileOptions } from './commands/update/types';
 
+const globFiles = (files: string[]): Promise<string[]> => fastGlob(files);
+
 const checkFiles = async (
-  files: string[],
+  filePatterns: string[],
   options: ParseFileOptions,
 ): Promise<void> => {
+  const files = await globFiles(filePatterns);
   const result = await Promise.all(files.map(file => checkFile(file, options)));
 
   const updateRequiredFiles = result.filter(file => file.updateRequired);
@@ -47,6 +51,7 @@ const createDocumentationCommand = async (
   options: CreateDocumentationOptions,
 ): Promise<void> => {
   await createDocumentation(fileName, options);
+
   console.log(green('Documentation file was created successfully.'));
 };
 
@@ -55,13 +60,13 @@ yargs(process.argv.slice(2))
   .scriptName('doccheck')
   .usage('$0 <cmd> [args]')
   .command(
-    'check [files..]',
+    'check [filePatterns..]',
     'Check if documentation files are up to date',
     () => {},
     argv => {
-      if (!Array.isArray(argv.files)) return;
+      if (!Array.isArray(argv.filePatterns)) return;
       // TODO: options
-      checkFiles(argv.files, {});
+      checkFiles(argv.filePatterns, {});
     },
   )
   .command(
