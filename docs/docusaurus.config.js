@@ -30,7 +30,7 @@ const config = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/krystofrezac/doccheck/tree/main/docs/docs',
         },
         blog: false,
         theme: {
