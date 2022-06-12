@@ -1,6 +1,8 @@
 export interface Metadata {
   updatedAfter: string;
   dependencies: string[];
+  // metadata not created by doccheck
+  other: Record<string, string>;
 }
 
 /**
@@ -15,7 +17,7 @@ export const parseMetadata = (fileContent: string): Metadata => {
     metadataEndIndex,
   );
 
-  const result: Metadata = { updatedAfter: '', dependencies: [] };
+  const result: Metadata = { updatedAfter: '', dependencies: [], other: {} };
 
   const metadataRows = metadataContent.split('\n');
   metadataRows.forEach(row => {
@@ -24,13 +26,16 @@ export const parseMetadata = (fileContent: string): Metadata => {
     value = value ? value.trim() : '';
 
     switch (key) {
-      case 'updatedAfter':
+      case 'updated_after':
         result.updatedAfter = value;
         break;
       case 'dep':
         result.dependencies.push(value);
         break;
+      case '':
+        break;
       default:
+        result.other[key] = value;
         break;
     }
   });
@@ -45,8 +50,14 @@ export const stringifyMetadata = (metadata: Metadata): string => {
   const deps = metadata.dependencies.map(dep => `dep: ${dep}`).join('\n');
 
   let content = '---\n';
-  content += `updatedAfter: ${metadata.updatedAfter}\n`;
+  content += `updated_after: ${metadata.updatedAfter}\n`;
   content += `${deps}\n`;
+
+  Object.keys(metadata.other).forEach((key, index) => {
+    if (index === 0) content += '\n';
+    content += `${key}: ${metadata.other[key]}\n`;
+  });
+
   content += '---';
   return content;
 };
