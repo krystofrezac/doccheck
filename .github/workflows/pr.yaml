@@ -84,3 +84,17 @@ jobs:
             ${{ runner.os }}-install-
             ${{ runner.os }}-
       - run: npm run check-docs
+
+  test-doc-deploy:
+    name: Test documentation deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.15.1
+
+      - run: npm i
+        working-directory: ./docs
+      - run: npm run build
+        working-directory: ./docs

@@ -8,13 +8,14 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Doccheck',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/doccheck/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   // favicon: 'img/favicon.ico',
 
   organizationName: 'krystofrezac', // Usually your GitHub org/user name.
   projectName: 'doccheck', // Usually your repo name.
+  trailingSlash: false,
 
   i18n: {
     defaultLocale: 'en',
