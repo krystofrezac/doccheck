@@ -1,5 +1,7 @@
 name: Pull Request
-on: pull_request
+on: 
+  pull_request: 
+    branches: main
 
 jobs:
   install:
@@ -86,6 +88,10 @@ jobs:
       - run: npm run check-docs
 
   test-doc-deploy:
+    defaults:
+      run:
+        working-directory: docs
+
     name: Test documentation deployment
     runs-on: ubuntu-latest
     steps:
@@ -95,6 +101,4 @@ jobs:
           node-version: 16.15.1
 
       - run: npm i
-        working-directory: ./docs
       - run: npm run build
-        working-directory: ./docs
