@@ -13,6 +13,10 @@ import { UpdateFileOptions } from './commands/update/types';
 const globFiles = (files: string[], basePath?: string): Promise<string[]> =>
   fastGlob(files, { cwd: basePath });
 
+const setErrorCode = (): void => {
+  process.exitCode = 1;
+};
+
 const checkFiles = async (
   filePatterns: string[],
   options: ParseFileOptions,
@@ -21,21 +25,24 @@ const checkFiles = async (
   const result = await Promise.all(files.map(file => checkFile(file, options)));
 
   const updateRequiredFiles = result.filter(file => file.updateRequired);
-  if (updateRequiredFiles.length !== 0)
+
+  if (updateRequiredFiles.length === 0)
+    console.log(green('Documentation is up to date.'));
+  else {
     console.log(
       red(
         'Documentation is not up to date. Check these files if they do not need to be updated!',
       ),
     );
-  else console.log(green('Documentation is up to date.'));
-
-  updateRequiredFiles.forEach(file => {
-    console.log(
-      yellow(underline(file.filename)),
-      dim('- These dependencies were updated:'),
-    );
-    file.updatedDependencies.forEach(dep => console.log('  -', dep));
-  });
+    updateRequiredFiles.forEach(file => {
+      console.log(
+        yellow(underline(file.filename)),
+        dim('- These dependencies were updated:'),
+      );
+      file.updatedDependencies.forEach(dep => console.log('  -', dep));
+    });
+    setErrorCode();
+  }
 };
 
 const updateFiles = async (
