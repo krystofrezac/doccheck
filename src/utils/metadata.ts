@@ -47,7 +47,7 @@ export const parseMetadata = (fileContent: string): Metadata => {
  * Generate string from metadata
  */
 export const stringifyMetadata = (metadata: Metadata): string => {
-  const deps = metadata.dependencies.map(dep => `dep: ${dep}\n`);
+  const deps = metadata.dependencies.map(dep => `dep: ${dep}\n`).join('');
 
   let content = '---\n';
   content += `updated_after: ${metadata.updatedAfter}\n`;
