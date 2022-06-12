@@ -31,7 +31,7 @@ const config = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/krystofrezac/doccheck/tree/main/docs/docs',
+            'https://github.com/krystofrezac/doccheck/tree/main/docs',
         },
         blog: false,
         theme: {
