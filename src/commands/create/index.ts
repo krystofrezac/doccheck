@@ -3,6 +3,7 @@ import fs from 'fs';
 import simpleGit from 'simple-git';
 
 import getLastCommitHash from '../../utils/git';
+import { stringifyMetadata } from '../../utils/metadata';
 
 import { CreateDocumentationOptions } from './types';
 
@@ -14,11 +15,11 @@ const createDocumentation = async (
   if (options.gitDir)
     git = simpleGit().cwd({ path: options.gitDir, root: true });
 
-  const updatedAfter = await getLastCommitHash(git);
-
-  let metadata = '---\n';
-  metadata += `updatedAfter: ${updatedAfter}\n`;
-  metadata += '---\n';
+  const metadata = stringifyMetadata({
+    updatedAfter: await getLastCommitHash(git),
+    dependencies: [],
+    other: {},
+  });
 
   fs.writeFileSync(fileName, metadata, 'utf-8');
 };

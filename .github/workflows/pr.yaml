@@ -1,5 +1,7 @@
 name: Pull Request
-on: pull_request
+on: 
+  pull_request: 
+    branches: main
 
 jobs:
   install:
@@ -69,3 +71,34 @@ jobs:
       - run: git config --global user.email "test@test.com"
       - run: git config --global user.name "Test Test"
       - run: npm run test
+
+  doccheck:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Restore node_modules
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-install-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-install-
+            ${{ runner.os }}-
+      - run: npm run check-docs
+
+  test-doc-deploy:
+    defaults:
+      run:
+        working-directory: docs
+
+    name: Test documentation deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.15.1
+
+      - run: npm i
+      - run: npm run build

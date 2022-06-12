@@ -10,12 +10,13 @@
     "npm": "8.11.0"
   },
   "scripts": {
+    "prepare": "husky install",
     "build": "tsc --project tsconfig.build.json",
     "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix .",
     "lint:ci": "eslint --ext .js,.ts src",
     "test": "jest",
-    "prepare": "husky install"
+    "check-docs": "npm run build && node bin/index check docs/docs/**/*.md"
   },
   "dependencies": {
     "colorette": "^2.0.17",
