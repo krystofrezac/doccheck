@@ -1,6 +1,5 @@
 import simpleGit, { SimpleGit } from 'simple-git';
 
-import { parseMetadata } from '../../utils/metadata';
 import {
   createCommits,
   createDocumentationFile,
@@ -16,37 +15,6 @@ import parseFile, {
   getDocumentationLastUpdate,
 } from './parseFile';
 
-describe('parseMetadata', () => {
-  it('should parse normal file', () => {
-    const content = `
----
-updatedAfter: xyz
-dep: ./dep1.js
-dep: ./dep2.js
----
-`;
-    expect(parseMetadata(content)).toEqual({
-      updatedAfter: 'xyz',
-      dependencies: ['./dep1.js', './dep2.js'],
-    });
-  });
-
-  it('should parse file with whitespaces', () => {
-    const content = `
----
- updatedAfter :  xyz 
-
-dep: ./dep1.js 
- dep: ./dep2.js
----
-`;
-    expect(parseMetadata(content)).toEqual({
-      updatedAfter: 'xyz',
-      dependencies: ['./dep1.js', './dep2.js'],
-    });
-  });
-});
-
 describe('getDependenciesLastUpdates', () => {
   const git = simpleGit();
 
@@ -54,6 +22,7 @@ describe('getDependenciesLastUpdates', () => {
     const result = await getDependenciesLastUpdates(git, 'doc', {
       updatedAfter: '',
       dependencies: ['dep'],
+      other: {},
     });
     expect(result[0].file).toBe('dep');
   });
@@ -62,6 +31,7 @@ describe('getDependenciesLastUpdates', () => {
     const result = await getDependenciesLastUpdates(git, 'doc', {
       updatedAfter: '',
       dependencies: ['deps/dep'],
+      other: {},
     });
     expect(result[0].file).toBe('deps/dep');
   });
@@ -70,6 +40,7 @@ describe('getDependenciesLastUpdates', () => {
     const result = await getDependenciesLastUpdates(git, 'src/doc', {
       updatedAfter: '',
       dependencies: ['./dep'],
+      other: {},
     });
     expect(result[0].file).toBe('src/dep');
   });
@@ -78,6 +49,7 @@ describe('getDependenciesLastUpdates', () => {
     const result = await getDependenciesLastUpdates(git, 'docs/doc', {
       updatedAfter: '',
       dependencies: ['../dep'],
+      other: {},
     });
     expect(result[0].file).toBe('docs/../dep');
   });

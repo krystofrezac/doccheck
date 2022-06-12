@@ -32,7 +32,7 @@ describe('updateFile', () => {
 
     await updateFile('doc', { gitDir: repoPath });
     expect(fs.readFileSync(join(repoPath, 'doc'), 'utf-8')).toBe(`---
-updatedAfter: ${lastCommit.commit}
+updated_after: ${lastCommit.commit}
 dep: dep1
 dep: dep2
 ---`);
