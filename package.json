@@ -1,6 +1,6 @@
 {
   "name": "doccheck",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "index.js",
   "bin": {
     "doccheck": "./bin/index"
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "prepare": "husky install",
+    "release": "release-it",
     "build": "tsc --project tsconfig.build.json",
     "ts-verify": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts --fix .",
@@ -40,6 +41,7 @@
     "husky": "^8.0.1",
     "jest": "^28.1.0",
     "prettier": "^2.6.2",
+    "release-it": "^15.0.0",
     "ts-jest": "^28.0.3",
     "ts-node": "^10.8.0",
     "typescript": "^4.7.2"
