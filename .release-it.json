@@ -3,6 +3,6 @@
     "release": true
   },
   "hooks": {
-    "after:bump": "npm run build"
+    "after:bump": "npm install && npm run build"
   }
 }
