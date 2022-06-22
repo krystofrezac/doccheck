@@ -1,5 +1,5 @@
 ---
-updated_after: 2512cc797a21fda9d51cc44f37e114704346195c
+updated_after: aae5d38beb118faa20c94daf1b5d8b838923926c
 dep: src/index.ts
 
 sidebar_position: 2
