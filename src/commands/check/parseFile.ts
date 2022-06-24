@@ -3,7 +3,7 @@ import path, { join } from 'path';
 
 import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
 
-import { Metadata, parseMetadata } from '../../utils/metadata';
+import defaultParser, { Metadata } from '../../parsers/default';
 
 import { ParsedFile, ParseFileOptions } from './types';
 
@@ -103,7 +103,7 @@ const parseFile = async (
     git = simpleGit().cwd({ path: options.gitDir, root: true });
 
   const file = readFile(join(options.gitDir || '', filename));
-  const metadata = parseMetadata(file);
+  const metadata = defaultParser.parseMetadata(file);
 
   return {
     lastUpdate: await getDocumentationLastUpdate(git, metadata.updatedAfter),

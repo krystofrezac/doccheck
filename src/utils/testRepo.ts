@@ -3,7 +3,7 @@ import { join } from 'path';
 
 import simpleGit, { CommitResult, SimpleGit } from 'simple-git';
 
-import { stringifyMetadata } from './metadata';
+import defaultParser from '../parsers/default';
 
 let index = 0;
 
@@ -40,7 +40,7 @@ export const createDocumentationFile = (
 ): string => {
   fs.writeFileSync(
     join(repoPath, name),
-    stringifyMetadata({ ...metadata, other: {} }),
+    defaultParser.stringifyMetadata({ ...metadata, other: {} }, ''),
     'utf-8',
   );
   return name;
