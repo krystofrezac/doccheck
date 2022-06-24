@@ -1,10 +1,10 @@
 ---
-updated_after: aae5d38beb118faa20c94daf1b5d8b838923926c
-dep: ../../package.json
-dep: ../package.json
+updated_after: 50c61017ea02bf2309cf8be33e728370700d0266
+deps: [../../package.json, ../package.json]
 
 sidebar_position: 4
 ---
+
 
 # For maintainers
 # Project setup

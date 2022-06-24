@@ -2,8 +2,8 @@ import fs from 'fs';
 
 import simpleGit from 'simple-git';
 
+import defaultParser from '../../parsers/default';
 import getLastCommitHash from '../../utils/git';
-import { stringifyMetadata } from '../../utils/metadata';
 
 import { CreateDocumentationOptions } from './types';
 
@@ -15,11 +15,14 @@ const createDocumentation = async (
   if (options.gitDir)
     git = simpleGit().cwd({ path: options.gitDir, root: true });
 
-  const metadata = stringifyMetadata({
-    updatedAfter: await getLastCommitHash(git),
-    dependencies: [],
-    other: {},
-  });
+  const metadata = defaultParser.stringifyMetadata(
+    {
+      updatedAfter: await getLastCommitHash(git),
+      dependencies: [],
+      other: {},
+    },
+    '',
+  );
 
   fs.writeFileSync(fileName, metadata, 'utf-8');
 };
