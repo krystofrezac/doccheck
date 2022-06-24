@@ -3,12 +3,8 @@ import { join } from 'path';
 
 import simpleGit from 'simple-git';
 
+import defaultParser from '../../parsers/default';
 import getLastCommitHash from '../../utils/git';
-import {
-  deleteMetadata,
-  parseMetadata,
-  stringifyMetadata,
-} from '../../utils/metadata';
 
 import { UpdateFileOptions } from './types';
 
@@ -24,13 +20,16 @@ const updateFile = async (
 
   const content = fs.readFileSync(absoluteFileName, 'utf-8');
 
-  const metadata = parseMetadata(content);
+  const metadata = defaultParser.parseMetadata(content);
   const newMetadata = {
     ...metadata,
     updatedAfter: await getLastCommitHash(git),
   };
 
-  const newContent = stringifyMetadata(newMetadata) + deleteMetadata(content);
+  const newContent = defaultParser.stringifyMetadata(
+    newMetadata,
+    defaultParser.removeMetadata(content),
+  );
   fs.writeFileSync(absoluteFileName, newContent, 'utf-8');
 };
 

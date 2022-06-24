@@ -1,6 +1,6 @@
 ---
 updated_after: 2512cc797a21fda9d51cc44f37e114704346195c
-dep: src/index.ts
+deps: [src/index.ts]
 
 sidebar_position: 2
 ---
