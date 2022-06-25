@@ -48,7 +48,7 @@ export const createDocumentationFile = (
   };
   fs.writeFileSync(
     join(repoPath, name),
-    defaultParser.stringifyMetadata(parsedMetadata, ''),
+    defaultParser.stringifyMetadata(parsedMetadata, '\n'),
     'utf-8',
   );
 

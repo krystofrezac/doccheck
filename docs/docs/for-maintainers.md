@@ -5,8 +5,6 @@ deps: [../../package.json, ../package.json]
 sidebar_position: 4
 ---
 
-
-
 # For maintainers
 # Project setup
 Just clone git repository and run `npm install`. Make sure that you have the correct node and npm versions (they need to match versions in `engines` field of `package.json`)

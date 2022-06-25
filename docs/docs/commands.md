@@ -1,11 +1,9 @@
 ---
-updated_at: 2022-06-25T08:45:45.521Z
-deps: []
+updated_at: 2022-06-25T09:12:54.743Z
+deps: [src/index.ts]
 
-dep: [src/index.ts]
 sidebar_position: 3
 ---
-
 
 # CLI commands
 ## `doccheck --help`

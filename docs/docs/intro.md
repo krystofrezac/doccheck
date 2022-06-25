@@ -6,7 +6,6 @@ slug: /
 sidebar_position: 1
 ---
 
-
 # Intro
 Doccheck is CLI tool for checking that your documentation is up-to-date with code.
 

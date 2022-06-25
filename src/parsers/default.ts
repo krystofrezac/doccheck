@@ -87,8 +87,9 @@ const defaultParser: Parser = {
   removeMetadata: (file: string) => {
     const start = file.indexOf('---');
     const end = file.indexOf('---', start + 1) + 3;
+    const newlineAfterEnd = file.indexOf('\n', end);
 
-    return file.substring(0, start) + file.substring(end);
+    return file.substring(0, start) + file.substring(newlineAfterEnd + 1);
   },
 };
 
