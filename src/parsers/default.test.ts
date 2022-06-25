@@ -7,12 +7,12 @@ describe('default parser', () => {
     it('should parse normal file', () => {
       const content = `
 ---
-updated_after: xyz
+updated_at: 2022-06-25T08:38:21.689Z
 deps: [./dep1.js, ./dep2.js]
 ---
 `;
       expect(parseMetadata(content)).toEqual({
-        updatedAfter: 'xyz',
+        updatedAt: new Date('2022-06-25T08:38:21.689Z'),
         dependencies: ['./dep1.js', './dep2.js'],
         other: {},
       });
@@ -21,13 +21,13 @@ deps: [./dep1.js, ./dep2.js]
     it('should parse file with whitespaces', () => {
       const content = `
 ---
- updated_after :  xyz 
+ updated_at :   2022-06-25T08:38:21.689Z   
 
 deps:  [ ./dep1.js,  ./dep2.js  ]  
 ---
 `;
       expect(parseMetadata(content)).toEqual({
-        updatedAfter: 'xyz',
+        updatedAt: new Date('2022-06-25T08:38:21.689Z'),
         dependencies: ['./dep1.js', './dep2.js'],
         other: {},
       });
@@ -35,14 +35,14 @@ deps:  [ ./dep1.js,  ./dep2.js  ]
     it('should parse other metadata', () => {
       const content = `
 ---
-updated_after :  xyz 
+updated_at :  2022-06-25T08:38:21.689Z 
 deps: [./dep1.js, ./dep2.js]
 other_metadata: abc
 random: cba
 ---
 `;
       expect(parseMetadata(content)).toEqual({
-        updatedAfter: 'xyz',
+        updatedAt: new Date('2022-06-25T08:38:21.689Z'),
         dependencies: ['./dep1.js', './dep2.js'],
         other: { other_metadata: 'abc', random: 'cba' },
       });
@@ -50,16 +50,17 @@ random: cba
   });
   describe('stringifyMetadata', () => {
     it('should stringify doccheck metadata', () => {
+      const updatedAt = new Date(1);
       const result = stringifyMetadata(
         {
-          updatedAfter: 'abc',
+          updatedAt,
           dependencies: ['a', 'b'],
           other: {},
         },
         '1\n2',
       );
       expect(result).toBe(`---
-updated_after: abc
+updated_at: ${updatedAt.toISOString()}
 deps: [a, b]
 ---
 1
@@ -67,16 +68,17 @@ deps: [a, b]
     });
 
     it('should stringify other metadata', () => {
+      const updatedAt = new Date(1);
       const result = stringifyMetadata(
         {
-          updatedAfter: 'abc',
+          updatedAt,
           dependencies: ['a', 'b'],
           other: { other_metadata: '123', random_metadata: 'abc' },
         },
         '1\n2',
       );
       expect(result).toBe(`---
-updated_after: abc
+updated_at: ${updatedAt.toISOString()}
 deps: [a, b]
 
 other_metadata: 123

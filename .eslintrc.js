@@ -38,5 +38,6 @@ module.exports = {
         ],
       },
     ],
+    'newline-before-return': 'error',
   },
 };

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path, { join } from 'path';
 
-import simpleGit, { DefaultLogFields, SimpleGit } from 'simple-git';
+import simpleGit, { SimpleGit } from 'simple-git';
 
 import defaultParser, { Metadata } from '../../parsers/default';
 
@@ -49,49 +49,6 @@ export const getDependenciesLastUpdates = async (
   );
 
 /**
- * Get last update date of documentation
- */
-export const getDocumentationLastUpdate = async (
-  git: SimpleGit,
-  updatedAfter: string,
-): Promise<Date | undefined> => {
-  // was created at first commit
-  if (updatedAfter === '') {
-    return (
-      git
-        .log()
-        .then(commits => new Date(commits.all[commits.all.length - 1].date))
-        // no commits in repo
-        .catch(() => undefined)
-    );
-  }
-
-  const getBeforeTheLastCommit = (
-    commits: ReadonlyArray<DefaultLogFields>,
-  ): DefaultLogFields =>
-    commits.length > 1
-      ? commits[commits.length - 2]
-      : commits[commits.length - 1];
-
-  return (
-    git
-      // log from updatedAfter to HEAD
-      .log({
-        from: `${updatedAfter}~`,
-        to: 'HEAD',
-      })
-      // was created after second commit
-      .then(commits => new Date(getBeforeTheLastCommit(commits.all).date))
-      // was created at second commit
-      .catch(async () => {
-        const commits = await git.log();
-
-        return new Date(getBeforeTheLastCommit(commits.all).date);
-      })
-  );
-};
-
-/**
  * Get last update dates from documentation metadata
  */
 const parseFile = async (
@@ -106,7 +63,7 @@ const parseFile = async (
   const metadata = defaultParser.parseMetadata(file);
 
   return {
-    lastUpdate: await getDocumentationLastUpdate(git, metadata.updatedAfter),
+    updatedAt: metadata.updatedAt,
     dependencies: await getDependenciesLastUpdates(git, filename, metadata),
   };
 };
