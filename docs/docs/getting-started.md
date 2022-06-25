@@ -1,11 +1,9 @@
 ---
-updated_at: 2022-06-25T08:46:05.063Z
-deps: []
+updated_at: 2022-06-25T09:17:09.824Z
+deps: [src/index.ts]
 
-dep: [src/index.ts]
 sidebar_position: 2
 ---
-
 
 # Getting started
 :::caution
