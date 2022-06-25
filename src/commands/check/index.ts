@@ -5,7 +5,7 @@ export const shouldFileBeUpdated = (
   filename: string,
   parsedFile: ParsedFile,
 ): CheckFileResult => {
-  const fileLastUpdate = parsedFile.lastUpdate;
+  const fileLastUpdate = parsedFile.updatedAt;
   if (!fileLastUpdate)
     return { filename, updateRequired: false, updatedDependencies: [] };
 
@@ -25,6 +25,7 @@ const checkFile = async (
   options: ParseFileOptions,
 ): Promise<CheckFileResult> => {
   const parsedFile = await parseFile(filename, options);
+
   return shouldFileBeUpdated(filename, parsedFile);
 };
 

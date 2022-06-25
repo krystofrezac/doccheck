@@ -1,23 +1,11 @@
 import fs from 'fs';
 
-import simpleGit from 'simple-git';
-
 import defaultParser from '../../parsers/default';
-import getLastCommitHash from '../../utils/git';
 
-import { CreateDocumentationOptions } from './types';
-
-const createDocumentation = async (
-  fileName: string,
-  options: CreateDocumentationOptions,
-): Promise<void> => {
-  let git = simpleGit();
-  if (options.gitDir)
-    git = simpleGit().cwd({ path: options.gitDir, root: true });
-
+const createDocumentation = async (fileName: string): Promise<void> => {
   const metadata = defaultParser.stringifyMetadata(
     {
-      updatedAfter: await getLastCommitHash(git),
+      updatedAt: new Date(Date.now()),
       dependencies: [],
       other: {},
     },

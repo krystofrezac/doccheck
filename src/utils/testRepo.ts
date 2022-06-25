@@ -3,18 +3,20 @@ import { join } from 'path';
 
 import simpleGit, { CommitResult, SimpleGit } from 'simple-git';
 
-import defaultParser from '../parsers/default';
+import defaultParser, { Metadata } from '../parsers/default';
 
 let index = 0;
 
 export const getRepoPath = (): string => {
   index += 1;
+
   return join(process.cwd(), `testRepo-${process.env.JEST_WORKER_ID}-${index}`);
 };
 
 export const getGit = async (repoPath: string): Promise<SimpleGit> => {
   const git = simpleGit();
   await git.cwd({ path: repoPath, root: true });
+
   return git;
 };
 
@@ -22,6 +24,7 @@ export const createRepo = async (repoPath: string): Promise<SimpleGit> => {
   fs.mkdirSync(repoPath);
 
   await simpleGit().init([repoPath]);
+
   return getGit(repoPath);
 };
 export const deleteRepo = (repoPath: string): void => {
@@ -36,17 +39,24 @@ export const wait = (time: number = 2000): Promise<void> =>
 export const createDocumentationFile = (
   repoPath: string,
   name: string,
-  metadata: { updatedAfter: string; dependencies: string[] },
-): string => {
+  metadata: { updatedAt?: Date; dependencies: string[] },
+): { name: string; metadata: Metadata } => {
+  const parsedMetadata = {
+    updatedAt: metadata.updatedAt ?? new Date(Date.now()),
+    dependencies: metadata.dependencies,
+    other: {},
+  };
   fs.writeFileSync(
     join(repoPath, name),
-    defaultParser.stringifyMetadata({ ...metadata, other: {} }, ''),
+    defaultParser.stringifyMetadata(parsedMetadata, ''),
     'utf-8',
   );
-  return name;
+
+  return { name, metadata: parsedMetadata };
 };
 export const createFile = (repoPath: string, name: string): string => {
   fs.writeFileSync(join(repoPath, name), '', 'utf-8');
+
   return name;
 };
 
@@ -67,5 +77,6 @@ export const createCommits = async (
     // eslint-disable-next-line no-await-in-loop
     await wait();
   }
+
   return lastCommit;
 };

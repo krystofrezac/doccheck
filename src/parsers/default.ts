@@ -1,5 +1,5 @@
 export interface Metadata {
-  updatedAfter: string;
+  updatedAt: Date;
   dependencies: string[];
   // metadata not created by doccheck
   other: Record<string, string>;
@@ -31,7 +31,11 @@ const defaultParser: Parser = {
       metadataEndIndex,
     );
 
-    const result: Metadata = { updatedAfter: '', dependencies: [], other: {} };
+    const result: Metadata = {
+      updatedAt: new Date(Date.now()),
+      dependencies: [],
+      other: {},
+    };
 
     const metadataRows = metadataContent.split('\n');
     metadataRows.forEach(row => {
@@ -40,8 +44,8 @@ const defaultParser: Parser = {
       value = value ? value.trim() : '';
 
       switch (key) {
-        case 'updated_after':
-          result.updatedAfter = value;
+        case 'updated_at':
+          result.updatedAt = new Date(value);
           break;
         case 'deps':
           value
@@ -66,7 +70,7 @@ const defaultParser: Parser = {
     const deps = `[${metadata.dependencies.join(', ')}]`;
 
     let content = '---\n';
-    content += `updated_after: ${metadata.updatedAfter}\n`;
+    content += `updated_at: ${metadata.updatedAt.toISOString()}\n`;
     content += `deps: ${deps}\n`;
 
     Object.keys(metadata.other).forEach((key, index) => {

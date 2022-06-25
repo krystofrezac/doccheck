@@ -1,9 +1,11 @@
 ---
-updated_after: aae5d38beb118faa20c94daf1b5d8b838923926c
+updated_at: 2022-06-25T08:46:08.955Z
+deps: []
 
 slug: /
 sidebar_position: 1
 ---
+
 
 # Intro
 Doccheck is CLI tool for checking that your documentation is up-to-date with code.

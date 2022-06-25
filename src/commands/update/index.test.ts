@@ -2,7 +2,6 @@ import fs from 'fs';
 import { join } from 'path';
 
 import {
-  createCommits,
   createDocumentationFile,
   createRepo,
   deleteRepo,
@@ -23,16 +22,15 @@ describe('updateFile', () => {
     deleteRepo(repoPath);
   });
 
-  it('should write current commit', async () => {
-    createDocumentationFile(repoPath, 'doc', {
-      updatedAfter: '',
+  it('should write current date', async () => {
+    const doc = createDocumentationFile(repoPath, 'doc', {
       dependencies: ['dep1', 'dep2'],
     });
-    const lastCommit = await createCommits(repoPath, 2);
 
     await updateFile('doc', { gitDir: repoPath });
+
     expect(fs.readFileSync(join(repoPath, 'doc'), 'utf-8')).toBe(`---
-updated_after: ${lastCommit.commit}
+updated_at: ${doc.metadata.updatedAt.toISOString()}
 deps: [dep1, dep2]
 ---`);
   });

@@ -9,6 +9,6 @@ export interface ParseFileOptions {
 }
 
 export interface ParsedFile {
-  lastUpdate?: Date;
+  updatedAt: Date;
   dependencies: { file: string; lastUpdate?: Date }[];
 }

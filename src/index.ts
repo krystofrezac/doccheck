@@ -6,7 +6,6 @@ import yargs from 'yargs/yargs';
 import checkFile from './commands/check';
 import { ParseFileOptions } from './commands/check/types';
 import createDocumentation from './commands/create';
-import { CreateDocumentationOptions } from './commands/create/types';
 import updateFile from './commands/update';
 import { UpdateFileOptions } from './commands/update/types';
 
@@ -54,11 +53,8 @@ const updateFiles = async (
   console.log(green('Documentation files updated successfully.'));
 };
 
-const createDocumentationCommand = async (
-  fileName: string,
-  options: CreateDocumentationOptions,
-): Promise<void> => {
-  await createDocumentation(fileName, options);
+const createDocumentationCommand = async (fileName: string): Promise<void> => {
+  await createDocumentation(fileName);
 
   console.log(green('Documentation file was created successfully.'));
 };
@@ -111,7 +107,7 @@ yargs(process.argv.slice(2))
       }),
     argv => {
       if (!argv.file) return;
-      createDocumentationCommand(argv.file, { gitDir: argv.gitDir });
+      createDocumentationCommand(argv.file);
     },
   )
   .demandCommand()
