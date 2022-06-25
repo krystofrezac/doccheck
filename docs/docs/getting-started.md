@@ -1,9 +1,11 @@
 ---
-updated_after: aae5d38beb118faa20c94daf1b5d8b838923926c
-dep: [src/index.ts]
+updated_at: 2022-06-25T08:46:05.063Z
+deps: []
 
+dep: [src/index.ts]
 sidebar_position: 2
 ---
+
 
 # Getting started
 :::caution
@@ -20,11 +22,11 @@ If you already have a documentation file and want to add it to docheck run `npx 
 :::
 
 ## Add dependencies
-Add `dep` to generated metadata like this:
+Add `deps` to generated metadata like this:
 ```diff
  ---
  updated_after: xxx
-+dep: path-to-dependency-file
++deps: [path-to-dependency-file1, path-to-dependency-file2]
  ---
 ```
 ## Check that your documentation is up to date
